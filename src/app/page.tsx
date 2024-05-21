@@ -1,12 +1,14 @@
-"use client";
+'use client';
 
 /* eslint-disable */
 
-import Image from "next/image";
-import styles from "./page.module.css";
-import playerData from "../../server/data2.json";
-import { getRandomPlayers, getRandomItem } from "@/utils/getRandomPlayer";
-import { useEffect, useState } from "react";
+import Image from 'next/image';
+import styles from './page.module.css';
+import playerData from '../../server/data2.json';
+import { getRandomPlayers, getRandomItem } from '@/utils/getRandomPlayer';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import RenderResult from 'next/dist/server/render-result';
+import Rules from './Rules';
 
 interface Player {
   name: string;
@@ -14,119 +16,383 @@ interface Player {
   height: string;
   overall: string;
   image?: string;
+  jersey: string;
   extraData?: string;
+  team: string;
 }
 
-export default function Home(props: any) {
-  const [players, setPlayers] = useState<Player[]>(
-    getRandomPlayers(playerData, 60, 84)
-  );
-  const [randomPlayer, setRandomPlayer] = useState<Player>({
-    name: "",
-    position: [],
-    height: "",
-    overall: "",
-    image: "",
-  });
-  const [reveal, setReveal] = useState<boolean>(false);
-  const [showAllPlayers, setShowAllPlayers] = useState<boolean>(false);
+const MaxAttempts = 5; //Max Attempts
 
+//getting players higher than rating 85
+export default function Home(props: any) {
+  const [showRules, setShowRules] = useState(false);
+  const [selectedRating, setSelectedRating] = useState(90);
+  const [players, setPlayers] = useState<Player[]>(
+    getRandomPlayers(playerData, 60, 85)
+  );
+
+  // const handleRating = (rating) => {
+  //   setSelectedRating(rating);
+  //   if (rating) {
+  //     setPlayers(getRandomPlayers(playerData, 60, rating));
+
+  //     handleReroll();
+  //   }
+  // };
+
+  //random player keys
+  const [randomPlayer, setRandomPlayer] = useState<Player>({
+    name: '',
+    position: [],
+    height: '',
+    overall: '',
+
+    image: '',
+    jersey: '',
+    team: '',
+  });
+
+  const [reveal, setReveal] = useState<boolean>(false); //revealing state
+  const [correctGuess, setCorrectGuess] = useState(false); //checking correct guess
+  const inputRefs = useRef([]); //allowing to move foward and backwards with keyboard
+  const [attemptSubmitted, setAttemptSubmitted] = useState(false);
+
+  //Everytime pleyer state changes this will be called
   useEffect(() => {
     setRandomPlayer(getRandomItem(players));
+  }, [players]);
+
+  //random player is the playerobj i want the name of the random player
+  const { name } = randomPlayer; // Lebron James
+
+
+  //making it uppercase
+  const playerName = name.toUpperCase(); // LEBRON JAMES
+  //checking the current attempt. only 5 attempts allowed
+  const [currentAttempt, setCurrentAttempt] = useState(0);
+  //5 guesses each row will have the amount of letters the random player has
+  const [guesses, setGuesses] = useState(
+    Array(MaxAttempts)
+      .fill('')
+      .map(() => Array(playerName).fill(''))
+  );
+  //5 rows same so we can initialize the colors
+  const [colors, setColors] = useState(
+    Array(MaxAttempts)
+      .fill('')
+      .map(() => Array(playerName).fill(''))
+  );
+
+  //to move forward and backwards and type with keyboard
+  useEffect(() => {
+    inputRefs.current[0]?.focus();
   }, []);
+  //handle input change.
+  const handleInputChange = (e, attemptIndex, index) => {
+    //capitalizing value
+    let value = e.target.value.toUpperCase();
 
-  const { name, position, height, overall, image } = randomPlayer;
+    //if value less or equal to 1, create a shallow array of guesses and assign the value to the current attempt and the current index
+    //then set it to guesses
+    if (value.length <= 1) {
+      const newGuesses = [...guesses];
+      newGuesses[attemptIndex][index] = value;
+      setGuesses(newGuesses);
 
-  console.log(randomPlayer, players);
+      //next indext to move to next index
+      let nextIndex = index + 1;
+      //checking if its equal to a space or a dash we will increment index.
+      if (
+        nextIndex < playerName.length &&
+        (playerName[nextIndex] === ' ' || playerName[nextIndex] === '-')
+      ) {
+        nextIndex++;
+      }
+      //either it will go to the next input box if theres no space next or it will go to the next box that can place a letter
+      if (nextIndex < playerName.length) {
+        inputRefs.current[attemptIndex][nextIndex]?.focus();
+      }
+    }
+  };
 
-  if (!randomPlayer) {
-    return null;
+  const handleKeyDown = (e, attemptIndex, index) => {
+
+    let previndex = index - 1;
+
+    //if i press the backspace im going to create a shallow array of userGuess
+    if (e.key === 'Backspace') {
+      e.preventDefault();
+      const newGuesses = [...guesses];
+      //if index is same length as name and is a letter delete letter and stay on same box
+      if (
+        index === playerName.length - 1 &&
+        /[a-zA-Z]/.test(guesses[attemptIndex][index])
+      ) {
+        newGuesses[attemptIndex][index] = '';
+        setGuesses(newGuesses);
+
+        inputRefs.current[attemptIndex][index]?.focus();
+        //if its only the same length as name, delete and go back one box
+      } else if (index === playerName.length - 1) {
+        newGuesses[attemptIndex][index - 1] = '';
+        setGuesses(newGuesses);
+        inputRefs.current[attemptIndex][index - 1]?.focus();
+      }
+      //if it doesnt equal length and the prev index value is a space or a dash decrement prev index value
+      if (
+        index !== playerName.length - 1 &&
+        previndex >= 0 &&
+        (playerName[previndex] === ' ' || playerName[previndex] === '-')
+      ) {
+        previndex--;
+      }
+      //if it doesnt equal length of name and prev index is greater than 0, delter and go back either one or two boxes
+      if (index !== playerName.length - 1 && previndex >= 0) {
+        newGuesses[attemptIndex][previndex] = '';
+        setGuesses(newGuesses);
+        inputRefs.current[attemptIndex][previndex]?.focus();
+      }
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSubmit();
+      // if its less than Max attempt, fous to the next currentattempt
+      if (currentAttempt + 1 < MaxAttempts) {
+        inputRefs.current[currentAttempt + 1][0]?.focus();
+      }
+    }
+  };
+
+  //test if correct
+  const handleSubmit = () => {
+    //joining the current attempt guess
+    const guess = guesses[currentAttempt].join('');
+    //taking away dashed and spaces
+    const playerNamefix = playerName.replace(/\s/g, '').replace(/[-"']/g, '');
+    console.log(guess, 'guess');
+    console.log(playerNamefix, 'fix');
+    //if guess which is all capatilized no space is equal to playername which is taking away all spaces and is already uppercased,
+    //set correct guess and reveal to true
+    if (guess === playerNamefix) {
+      setCorrectGuess(true);
+      setReveal(true);
+      //else we are creating shallow array of colors, for loop through playername
+    } else {
+      const newColors = [...colors];
+      for (let i = 0; i < playerName.length; i++) {
+        if (guesses[currentAttempt][i] === playerName[i]) {
+          newColors[currentAttempt][i] = 'green';
+          //includes the guess letter and the guess is a
+        } else if (
+          playerName.includes(guesses[currentAttempt][i]) &&
+          /[A-Z]/.test(guesses[currentAttempt][i])
+        ) {
+          newColors[currentAttempt][i] = 'yellow';
+        } else {
+          newColors[currentAttempt][i] = 'red';
+        }
+      }
+
+      //setting color to newColors and setting current attempt by incrementing the currentAttempt
+      setColors(newColors);
+
+      setCurrentAttempt(currentAttempt + 1);
+
+      //if currentAttempt is === to max attempts reveal the player
+      if (currentAttempt + 1 === MaxAttempts) {
+        setCorrectGuess(false);
+        setReveal(true);
+      }
+    }
+  };
+
+  const isNumber = (jersey) => {
+    if (typeof jersey === 'number') {
+      return true;
+    }
+    return false;
+  };
+  //hint for the client to guess the player giving them the position, height and overall.
+  const Hints = () => {
+    const { position, height, jersey, overall, team } = randomPlayer;
+  
+    return (
+      <div className={styles.hintsContainer}>
+      
+        <div className={styles.hintsContent}>
+          <p className={styles.hintItem}>
+            Position: {position[0]} {position[1]}
+          </p>
+          {height && <p className={styles.hintItem}>Height: {height}</p>}
+          {isNumber(jersey) ? (
+            <p className={styles.hintItem}>Jersey : {jersey}</p>
+          ) : (
+            <p className={styles.hintItem}>
+              Jersey : Not available at the moment
+            </p>
+          )}
+          <p className={styles.hintItem}>Team: {team}</p>
+          <p className={styles.hintItem}>Overall: {overall}</p>
+        </div>
+      </div>
+    );
+  };
+
+  //rerolling function
+  const handleReroll = () => {
+    //getting a new player
+    const newPlayer = getRandomItem(players);
+    setRandomPlayer(newPlayer);
+    //setting Guesses back to empty arrays
+    setGuesses(
+      Array.from({ length: MaxAttempts }, () =>
+        Array(newPlayer.name.length).fill('')
+      )
+    );
+    //setting colors back to empty arrays
+    setColors(
+      Array.from({ length: MaxAttempts }, () =>
+        Array(newPlayer.name.length).fill('')
+      )
+    );
+    //reset all states
+    setCurrentAttempt(0);
+    setReveal(false);
+    setCorrectGuess(false);
+    inputRefs.current = [];
+  };
+  //Answer Correctly function
+  const AnswerCorrectly = () => {
+    if (reveal) {
+      return (
+        <div>
+          {correctGuess ? (
+            <p className={styles.correct}>Correct! The player is {name}</p>
+          ) : (
+            <p className={styles.incorrect}>
+              Incorrect! The player is {name} Press Reroll to try again.
+            </p>
+          )}
+          {randomPlayer.image ? (
+            <Image
+              className={styles.image}
+              src={randomPlayer.image}
+              alt="player image"
+              height={150}
+              width={110}
+            />
+          ) : (
+            <Image
+              className={styles.image}
+              alt="Placeholder Player Image"
+              src="/noPlayerImage.png"
+            />
+          )}
+      
+        </div>
+      );
+    } else {
+      return <p className={styles.incorrect}>Incorrect! Try again.</p>;
+    }
+  };
+
+  //pushing each row in the box
+  const inputBoxes = [];
+  //for loop through atempts to get each row in each attempt
+  for (let attemptIndex = 0; attemptIndex < MaxAttempts; attemptIndex++) {
+    const row = [];
+    for (let i = 0; i < playerName.length; i++) {
+      // if letter is a space, create a space span
+      if (playerName[i] === ' ') {
+        row.push(
+          <span key={`${attemptIndex}-${i}`} className={styles.space}>
+            &nbsp;
+          </span>
+        );
+        //auto fill dashes
+      } else if (playerName[i] === '-') {
+        row.push(
+          <input
+            key={`${attemptIndex}-${i}`}
+            type="text"
+            value="-"
+            disabled
+            className={`${styles.inputBox}`}
+          />
+        );
+      }
+
+      //else push it in row with props key ones, key is ex(0-0)
+      else {
+        row.push(
+          <input
+            key={`${attemptIndex}-${i}`}
+            ref={(el) => {
+              if (!inputRefs.current[attemptIndex])
+                inputRefs.current[attemptIndex] = [];
+              inputRefs.current[attemptIndex][i] = el;
+            }}
+            type="text"
+            maxLength={1}
+            //value will be the current index of the attempt
+            value={guesses[attemptIndex][i]}
+            //on Change will allow it to change based on function
+            onChange={(e) => handleInputChange(e, attemptIndex, i)}
+            //allows to type forward and backwards
+            onKeyDown={(e) => handleKeyDown(e, attemptIndex, i)}
+            //class so we can style each Input Box and style for each box color depending on the color given in the state color
+            className={`${styles.inputBox} ${styles[colors[attemptIndex][i]]}`}
+          />
+        );
+      }
+    }
+    //pushing each row in inputBoxes
+    inputBoxes.push(
+      <div key={`row-${attemptIndex}`} className={styles.row}>
+        {row}
+      </div>
+    );
   }
 
+
+  // style = {{backgroundColor : randomPlayer.team}
   return (
     <main className={styles.main}>
       <div className={styles.description}>
-        <h1>Guess the nba player</h1>
+        <h1 className={styles.title}>Guess the NBA Player</h1>
+      </div>
 
-        <div className={styles.container}>
-          <div className={styles.container_item}>
-            <p>Position: </p>
+      <div className={styles.container}>
+        {/* When clicking button, it will hide rules or show rules changing the state of the showRules */}
+        <button className={styles.button} onClick={() => setShowRules(!showRules)}>
+          {showRules ? 'Hide Rules' : 'Show Rules'}
+        </button>
 
-            <div className={styles.container_item_position}>
-              {randomPlayer.position.map((position) => {
-                return <span key={`${name}${position}`}>{position}</span>;
-              })}
-            </div>
-          </div>
+        {showRules && <Rules />}
 
-          {height && <p className={styles.container_item}>Height: {height}</p>}
-          {randomPlayer.extraData && (
-            <p className={styles.container_item}>
-              Extra Data {randomPlayer.extraData}
-            </p>
-          )}
-          <p className={styles.container_item}>Overall: {overall}</p>
+        {/* <div className={styles.ratingSelection}>
+          <p>Select Player Rating:</p>
 
-          {reveal ? (
-            <div>
-              <p className={styles.container_item}>Name: {name}</p>
-              {randomPlayer.image ? (
-                <Image
-                  className={styles.image}
-                  src={randomPlayer.image}
-                  alt="player image"
-                  height={150}
-                  width={110}
-                />
-              ) : (
-                <Image
-                  className={styles.image}
-                  alt="Placeholder Player Image"
-                  src="/noPlayerImage.png"
-                  height={200}
-                  width={200}
-                />
-              )}
-            </div>
-          ) : (
-            <div>
-              <button
-                className={styles.button}
-                onClick={() => {
-                  setReveal(true);
-                }}
-              >
-                Reveal Player
-              </button>
-            </div>
-          )}
+          <button onClick={() => handleRating(70)}>70+</button>
+          <button onClick={() => handleRating(80)}>80+</button>
+          <button onClick={() => handleRating(90)}>90+</button>
+        </div> */}
 
-          <button
-            className={styles.button}
-            onClick={() => {
-              setRandomPlayer(getRandomItem(players));
-              setReveal(false);
-            }}
-          >
-            Reroll
+        <div className={styles.hints}>{Hints()}</div>
+
+        <div className={styles.inputRow}>{inputBoxes}</div>
+
+        <div className={styles.buttonContainer}>
+          <button className={styles.button} onClick={handleSubmit}>
+            Submit
           </button>
+      
 
-          <button
-            className={styles.button}
-            onClick={() => {
-              setShowAllPlayers(!showAllPlayers);
-            }}
-          >
-            Show all possible players
-          </button>
-          {showAllPlayers && (
-            <div className={styles.showAllPlayers}>
-              {players.map((player) => {
-                return <p>{player.name}</p>;
-              })}
-            </div>
-          )}
+        <button className={styles.button} onClick={handleReroll}>
+          Reroll
+        </button>
         </div>
+
+        <div className={styles.result}>{reveal ? AnswerCorrectly() : null}</div>
       </div>
     </main>
   );
