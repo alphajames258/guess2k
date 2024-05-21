@@ -56,7 +56,8 @@ export default function Home(props: any) {
 
   const [reveal, setReveal] = useState<boolean>(false); //revealing state
   const [correctGuess, setCorrectGuess] = useState(false); //checking correct guess
-  const inputRefs = useRef<HTMLInputElement[][]>([]);// Initialize as an empty array
+  const inputRefs = useRef<HTMLInputElement[]>([]);
+
  //allowing to move foward and backwards with keyboard
   const [attemptSubmitted, setAttemptSubmitted] = useState(false);
 
