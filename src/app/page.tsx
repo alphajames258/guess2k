@@ -6,7 +6,7 @@ import Image from 'next/image';
 import styles from './page.module.css';
 import playerData from '../../server/data2.json';
 import { getRandomPlayers, getRandomItem } from '@/utils/getRandomPlayer';
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import RenderResult from 'next/dist/server/render-result';
 import Rules from './Rules';
 import logo from './logo.png'
@@ -56,7 +56,8 @@ export default function Home(props: any) {
 
   const [reveal, setReveal] = useState<boolean>(false); //revealing state
   const [correctGuess, setCorrectGuess] = useState(false); //checking correct guess
-  const inputRefs = useRef([]); //allowing to move foward and backwards with keyboard
+  const inputRefs = useRef<HTMLInputElement[][]>([]);// Initialize as an empty array
+ //allowing to move foward and backwards with keyboard
   const [attemptSubmitted, setAttemptSubmitted] = useState(false);
 
   //Everytime pleyer state changes this will be called
@@ -90,7 +91,7 @@ export default function Home(props: any) {
     inputRefs.current[0]?.focus();
   }, []);
   //handle input change.
-  const handleInputChange = (e, attemptIndex, index) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>, attemptIndex: number, index: number) => {
     //capitalizing value
     let value = e.target.value.toUpperCase();
 
@@ -117,7 +118,7 @@ export default function Home(props: any) {
     }
   };
 
-  const handleKeyDown = (e, attemptIndex, index) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, attemptIndex: number, index: number) => {
 
     let previndex = index - 1;
 
@@ -206,7 +207,7 @@ export default function Home(props: any) {
     }
   };
 
-  const isNumber = (jersey) => {
+  const isNumber = (jersey: string) => {
     if (typeof jersey === 'number') {
       return true;
     }
@@ -328,10 +329,12 @@ export default function Home(props: any) {
           <input
             key={`${attemptIndex}-${i}`}
             ref={(el) => {
-              if (!inputRefs.current[attemptIndex])
+              if (el && !inputRefs.current[attemptIndex]) {
                 inputRefs.current[attemptIndex] = [];
-              inputRefs.current[attemptIndex][i] = el;
+              }
+              inputRefs.current[attemptIndex][i] = el as HTMLInputElement; // Type assertion here
             }}
+          
             type="text"
             maxLength={1}
             //value will be the current index of the attempt
