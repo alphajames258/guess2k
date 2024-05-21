@@ -9,6 +9,8 @@ import { getRandomPlayers, getRandomItem } from '@/utils/getRandomPlayer';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import RenderResult from 'next/dist/server/render-result';
 import Rules from './Rules';
+import logo from './logo.png'
+
 
 interface Player {
   name: string;
@@ -168,8 +170,7 @@ export default function Home(props: any) {
     const guess = guesses[currentAttempt].join('');
     //taking away dashed and spaces
     const playerNamefix = playerName.replace(/\s/g, '').replace(/[-"']/g, '');
-    console.log(guess, 'guess');
-    console.log(playerNamefix, 'fix');
+
     //if guess which is all capatilized no space is equal to playername which is taking away all spaces and is already uppercased,
     //set correct guess and reveal to true
     if (guess === playerNamefix) {
@@ -357,8 +358,12 @@ export default function Home(props: any) {
   // style = {{backgroundColor : randomPlayer.team}
   return (
     <main className={styles.main}>
+       
+
       <div className={styles.description}>
-        <h1 className={styles.title}>Guess the NBA Player</h1>
+        <span className={styles.titlefirst}>Guess the </span> 
+        <span className= {styles.titleSecond}>&nbsp;Nba Player</span>
+        <Image className = {styles.logo}src={logo} alt="Logo" width={100} height={200} />
       </div>
 
       <div className={styles.container}>

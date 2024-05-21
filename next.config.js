@@ -2,7 +2,8 @@
 const nextConfig = {
   images: {
     domains: ["www.basketball-reference.com"],
-    domains: ['gannett-cdn.com']
+    domains: ['gannett-cdn.com'],
+
   },
 };
 

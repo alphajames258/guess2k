@@ -93,15 +93,23 @@
 }
 
 .description {
-  text-align: center;
-  margin-bottom: 2rem;
+  display: flex;
+  align-items: center; /* Center vertically */
+  justify-content: center;
+
 }
 
-.title {
+.titlefirst {
   font-size: 50px;
   font-weight: bold;
   color: blue;
 
+
+}
+.titleSecond {
+  font-size: 50px;
+  font-weight: bold;
+  color: red;
 }
 
 .container {
@@ -235,3 +243,6 @@
   margin-bottom: 5px;
 }
 
+.logo {
+  margin-left: 20px;
+}
