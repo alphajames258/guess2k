@@ -56,7 +56,8 @@ export default function Home(props: any) {
 
   const [reveal, setReveal] = useState<boolean>(false); //revealing state
   const [correctGuess, setCorrectGuess] = useState(false); //checking correct guess
-  const inputRefs = useRef<HTMLInputElement[]>([]);
+  const inputRefs = useRef<HTMLInputElement[][]>([]);
+
 
  //allowing to move foward and backwards with keyboard
   const [attemptSubmitted, setAttemptSubmitted] = useState(false);
@@ -88,11 +89,18 @@ export default function Home(props: any) {
   );
 
   //to move forward and backwards and type with keyboard
-  useEffect(() => {
-    inputRefs.current[0]?.focus();
+
+      // Focus on the first input box when component mounts
+ useEffect(() => {
+  // Focus on the first input box when component mounts
+  if (typeof window !== 'undefined' && inputRefs.current[0]?.[0]) {
+    inputRefs.current[0][0].focus();
+  }
+
+
   }, []);
   //handle input change.
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>, attemptIndex: number, index: number) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>, attemptIndex: any, index: any) => {
     //capitalizing value
     let value = e.target.value.toUpperCase();
 
@@ -331,10 +339,13 @@ export default function Home(props: any) {
             key={`${attemptIndex}-${i}`}
             ref={(el) => {
               if (el && !inputRefs.current[attemptIndex]) {
-                inputRefs.current[attemptIndex] = [];
+                inputRefs.current[attemptIndex] = new Array(playerName.length);
               }
-              inputRefs.current[attemptIndex][i] = el as HTMLInputElement; // Type assertion here
+              if (inputRefs.current[attemptIndex]) {
+                inputRefs.current[attemptIndex][i] = el as HTMLInputElement;
+              }
             }}
+            
           
             type="text"
             maxLength={1}
@@ -367,7 +378,7 @@ export default function Home(props: any) {
       <div className={styles.description}>
         <span className={styles.titlefirst}>Guess the </span> 
         <span className= {styles.titleSecond}>&nbsp;Nba Player</span>
-        <Image className = {styles.logo}src={logo} alt="Logo" width={100} height={200} />
+        <Image className = {styles.logo}src={logo} alt="Logo" width={100} height={125} />
       </div>
 
       <div className={styles.container}>

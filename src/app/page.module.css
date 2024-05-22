@@ -84,12 +84,12 @@
 
 /* page.module.css */
 .main {
-  display: flex;
+  /* display: flex;
   flex-direction: column;
 
   justify-content: center;
   min-height: 100vh;
-  padding: 0 1rem;
+  padding: 0 1rem; */
 }
 
 .description {
@@ -100,14 +100,14 @@
 }
 
 .titlefirst {
-  font-size: 50px;
+  font-size: 35px;
   font-weight: bold;
   color: blue;
 
 
 }
 .titleSecond {
-  font-size: 50px;
+  font-size: 35px;
   font-weight: bold;
   color: red;
 }
@@ -167,12 +167,12 @@
 
 .correct {
   color: green;
-  font-size: 1.5rem;
+  font-size: 1.0rem;
 }
 
 .incorrect {
   color: red;
-  font-size: 1.5rem;
+  font-size: 1.0rem;
 }
 
 
