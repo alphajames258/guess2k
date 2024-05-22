@@ -12,6 +12,8 @@ import Rules from './Rules';
 import logo from './logo.png'
 
 
+
+
 interface Player {
   name: string;
   position: string[];
@@ -62,6 +64,10 @@ export default function Home(props: any) {
  //allowing to move foward and backwards with keyboard
   const [attemptSubmitted, setAttemptSubmitted] = useState(false);
 
+
+  const Rulespopup = () => {
+    setShowRules(!showRules)
+  }
   //Everytime pleyer state changes this will be called
   useEffect(() => {
     setRandomPlayer(getRandomItem(players));
@@ -382,12 +388,7 @@ export default function Home(props: any) {
       </div>
 
       <div className={styles.container}>
-        {/* When clicking button, it will hide rules or show rules changing the state of the showRules */}
-        <button className={styles.button} onClick={() => setShowRules(!showRules)}>
-          {showRules ? 'Hide Rules' : 'Show Rules'}
-        </button>
-
-        {showRules && <Rules />}
+     
 
         {/* <div className={styles.ratingSelection}>
           <p>Select Player Rating:</p>
@@ -410,10 +411,22 @@ export default function Home(props: any) {
         <button className={styles.button} onClick={handleReroll}>
           Reroll
         </button>
+
+        <button className={styles.button} onClick={Rulespopup}>
+            {showRules ? 'Hide Rules' : 'Show Rules'}
+          </button>
+       
+         
+      
+
+       
         </div>
 
         <div className={styles.result}>{reveal ? AnswerCorrectly() : null}</div>
+
+        
       </div>
+      {showRules && <Rules/>}
     </main>
   );
 }

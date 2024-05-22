@@ -83,19 +83,13 @@
  */
 
 /* page.module.css */
-.main {
-  /* display: flex;
-  flex-direction: column;
 
-  justify-content: center;
-  min-height: 100vh;
-  padding: 0 1rem; */
-}
 
 .description {
   display: flex;
-  align-items: center; /* Center vertically */
+  align-items: center; 
   justify-content: center;
+  margin-top: 30px;
 
 }
 
@@ -140,7 +134,7 @@
   margin: 0.2rem;
   text-align: center;
   font-size: 1.5rem;
-
+  color: white;
   border-radius: 4px;
 }
 
@@ -227,9 +221,9 @@
 }
 
 .hintsContainer {
- 
+  margin-top: 10px;
   border: 1px solid white;
-  padding: 20px;
+  padding: 25px;
   border-radius: 5px;
 }
 
@@ -246,3 +240,6 @@
 .logo {
   margin-left: 20px;
 }
+
+
+
