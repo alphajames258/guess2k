@@ -128,13 +128,14 @@
   margin-bottom: 0.5rem;
 }
 
+
 .inputBox {
   width: 2rem;
-
+  color: var(--input-text-color);
   margin: 0.2rem;
   text-align: center;
   font-size: 1.5rem;
-  color: white;
+ 
   border-radius: 4px;
 }
 
@@ -243,3 +244,117 @@
 
 
 
+@media (min-width: 701px) and (max-width: 1120px) {
+  .grid {
+    grid-template-columns: repeat(2, 50%);
+  }
+
+  .description {
+    flex-direction: row;
+  }
+
+  .titlefirst, .titleSecond {
+    font-size: 2.5rem;
+  }
+
+  .button {
+    width: auto;
+  }
+}
+
+@media (max-width: 700px) {
+  .description {
+    flex-direction: column;
+    margin-top: 20px;
+  }
+
+  .name {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .logo {
+    margin: 10px 0;
+  }
+
+  .buttonContainer {
+    flex-direction: column;
+  }
+
+  .inputBox {
+    width: 1.2rem;
+    height: 1.2rem;
+    font-size: 0.8rem;
+    margin: 0.05rem;
+  }
+
+  .space {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+
+  .hintsContainer {
+    padding: 15px;
+  }
+
+  .hintsContent {
+    font-size: 0.9rem;
+  }
+
+  .button {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+.modal {
+
+  position: fixed;
+
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modalContent {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+
+@media (prefers-color-scheme: dark) {
+  .vercelLogo {
+    filter: invert(1);
+  }
+
+  .logo {
+    filter: invert(1) drop-shadow(0 0 0.3rem #ffffff70);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}

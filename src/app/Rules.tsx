@@ -6,7 +6,7 @@ import styles from './Rules.module.css'
 
 const Rules = () => {
   return (
-    <div >
+    <div className= {styles.container}>
       <h2 className= {styles.title}>🏀 How to Play 🏀</h2>
       <p className = {styles.par}>
         Welcome to the NBA Player Guessing Game! In this game, you will be presented with the name of an NBA player rated 85 overall or higher. Your task is to guess the name of the player within 5 attempts.

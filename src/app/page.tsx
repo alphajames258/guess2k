@@ -9,10 +9,7 @@ import { getRandomPlayers, getRandomItem } from '@/utils/getRandomPlayer';
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import RenderResult from 'next/dist/server/render-result';
 import Rules from './Rules';
-import logo from './logo.png'
-
-
-
+import logo from './logo.png';
 
 interface Player {
   name: string;
@@ -29,7 +26,9 @@ const MaxAttempts = 5; //Max Attempts
 
 //getting players higher than rating 85
 export default function Home(props: any) {
+ 
   const [showRules, setShowRules] = useState(false);
+  const modalDisplay = showRules ? 'block' : 'none';
   const [selectedRating, setSelectedRating] = useState(90);
   const [players, setPlayers] = useState<Player[]>(
     getRandomPlayers(playerData, 60, 85)
@@ -60,14 +59,12 @@ export default function Home(props: any) {
   const [correctGuess, setCorrectGuess] = useState(false); //checking correct guess
   const inputRefs = useRef<HTMLInputElement[][]>([]);
 
-
- //allowing to move foward and backwards with keyboard
+  //allowing to move foward and backwards with keyboard
   const [attemptSubmitted, setAttemptSubmitted] = useState(false);
 
-
   const Rulespopup = () => {
-    setShowRules(!showRules)
-  }
+    setShowRules(!showRules);
+  };
   //Everytime pleyer state changes this will be called
   useEffect(() => {
     setRandomPlayer(getRandomItem(players));
@@ -75,7 +72,6 @@ export default function Home(props: any) {
 
   //random player is the playerobj i want the name of the random player
   const { name } = randomPlayer; // Lebron James
-
 
   //making it uppercase
   const playerName = name.toUpperCase(); // LEBRON JAMES
@@ -96,17 +92,19 @@ export default function Home(props: any) {
 
   //to move forward and backwards and type with keyboard
 
-      // Focus on the first input box when component mounts
- useEffect(() => {
   // Focus on the first input box when component mounts
-  if (typeof window !== 'undefined' && inputRefs.current[0]?.[0]) {
-    inputRefs.current[0][0].focus();
-  }
-
-
+  useEffect(() => {
+    // Focus on the first input box when component mounts
+    if (typeof window !== 'undefined' && inputRefs.current[0]?.[0]) {
+      inputRefs.current[0][0].focus();
+    }
   }, []);
   //handle input change.
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>, attemptIndex: any, index: any) => {
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    attemptIndex: any,
+    index: any
+  ) => {
     //capitalizing value
     let value = e.target.value.toUpperCase();
 
@@ -133,8 +131,11 @@ export default function Home(props: any) {
     }
   };
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, attemptIndex: number, index: number) => {
-
+  const handleKeyDown = (
+    e: KeyboardEvent<HTMLInputElement>,
+    attemptIndex: number,
+    index: number
+  ) => {
     let previndex = index - 1;
 
     //if i press the backspace im going to create a shallow array of userGuess
@@ -231,10 +232,9 @@ export default function Home(props: any) {
   //hint for the client to guess the player giving them the position, height and overall.
   const Hints = () => {
     const { position, height, jersey, overall, team } = randomPlayer;
-  
+
     return (
       <div className={styles.hintsContainer}>
-      
         <div className={styles.hintsContent}>
           <p className={styles.hintItem}>
             Position: {position[0]} {position[1]}
@@ -304,7 +304,6 @@ export default function Home(props: any) {
               src="/noPlayerImage.png"
             />
           )}
-      
         </div>
       );
     } else {
@@ -351,8 +350,6 @@ export default function Home(props: any) {
                 inputRefs.current[attemptIndex][i] = el as HTMLInputElement;
               }
             }}
-            
-          
             type="text"
             maxLength={1}
             //value will be the current index of the attempt
@@ -375,21 +372,25 @@ export default function Home(props: any) {
     );
   }
 
-
   // style = {{backgroundColor : randomPlayer.team}
   return (
     <main className={styles.main}>
-       
-
       <div className={styles.description}>
-        <span className={styles.titlefirst}>Guess the </span> 
-        <span className= {styles.titleSecond}>&nbsp;Nba Player</span>
-        <Image className = {styles.logo}src={logo} alt="Logo" width={100} height={125} />
+        <div className={styles.name}>
+          <span className={styles.titlefirst}>Guess the </span>
+          <span className={styles.titleSecond}>&nbsp;Nba Player</span>
+        </div>
+
+        <Image
+          className={styles.logo}
+          src={logo}
+          alt="Logo"
+          width={100}
+          height={125}
+        />
       </div>
 
       <div className={styles.container}>
-     
-
         {/* <div className={styles.ratingSelection}>
           <p>Select Player Rating:</p>
 
@@ -406,27 +407,28 @@ export default function Home(props: any) {
           <button className={styles.button} onClick={handleSubmit}>
             Submit
           </button>
-      
 
-        <button className={styles.button} onClick={handleReroll}>
-          Reroll
-        </button>
+          <button className={styles.button} onClick={handleReroll}>
+            Reroll
+          </button>
 
-        <button className={styles.button} onClick={Rulespopup}>
+          <button className={styles.button} onClick={Rulespopup}>
             {showRules ? 'Hide Rules' : 'Show Rules'}
           </button>
-       
-         
-      
-
-       
         </div>
 
         <div className={styles.result}>{reveal ? AnswerCorrectly() : null}</div>
-
-        
       </div>
-      {showRules && <Rules/>}
+      {showRules && (
+        <div className={styles.modal} style={{ display: modalDisplay }}>
+          <div className={styles.modalContent}>
+            <span className={styles.close} onClick={Rulespopup}>
+              &times;
+            </span>
+            <Rules />
+          </div>
+        </div>
+      )}
     </main>
   );
 }

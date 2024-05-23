@@ -4,7 +4,8 @@
   --font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
     'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
     'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
-
+    --input-text-color-light: #000; /* Black for light mode */
+    --input-text-color-dark: #fff;  /* White for dark mode */
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
@@ -103,5 +104,20 @@ a {
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
+  }
+}
+
+
+/* light mode dark mode so you can see the text depending on the client  */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --input-text-color: var(--input-text-color-dark);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --input-text-color: var(--input-text-color-light);
   }
 }
