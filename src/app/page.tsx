@@ -26,8 +26,9 @@ const MaxAttempts = 5; //Max Attempts
 
 //getting players higher than rating 85
 export default function Home(props: any) {
- 
+  const [showResult, setShowResult] = useState(false)
   const [showRules, setShowRules] = useState(false);
+  const modalDisplay2 = showResult ? 'block' : 'none';
   const modalDisplay = showRules ? 'block' : 'none';
   const [selectedRating, setSelectedRating] = useState(90);
   const [players, setPlayers] = useState<Player[]>(
@@ -65,6 +66,11 @@ export default function Home(props: any) {
   const Rulespopup = () => {
     setShowRules(!showRules);
   };
+
+  const Resultpopup = () => {
+    setShowResult(!showResult)
+
+  }
   //Everytime pleyer state changes this will be called
   useEffect(() => {
     setRandomPlayer(getRandomItem(players));
@@ -183,16 +189,20 @@ export default function Home(props: any) {
 
   //test if correct
   const handleSubmit = () => {
+    if (guesses[currentAttempt]) {
     //joining the current attempt guess
     const guess = guesses[currentAttempt].join('');
+    
     //taking away dashed and spaces
     const playerNamefix = playerName.replace(/\s/g, '').replace(/[-"']/g, '');
-
+    
     //if guess which is all capatilized no space is equal to playername which is taking away all spaces and is already uppercased,
     //set correct guess and reveal to true
     if (guess === playerNamefix) {
       setCorrectGuess(true);
       setReveal(true);
+      setShowResult(true)
+
       //else we are creating shallow array of colors, for loop through playername
     } else {
       const newColors = [...colors];
@@ -208,7 +218,9 @@ export default function Home(props: any) {
         } else {
           newColors[currentAttempt][i] = 'red';
         }
+      
       }
+
 
       //setting color to newColors and setting current attempt by incrementing the currentAttempt
       setColors(newColors);
@@ -219,8 +231,12 @@ export default function Home(props: any) {
       if (currentAttempt + 1 === MaxAttempts) {
         setCorrectGuess(false);
         setReveal(true);
+        setShowResult(true)
+       
+       
       }
     }
+  }
   };
 
   const isNumber = (jersey: string) => {
@@ -279,7 +295,7 @@ export default function Home(props: any) {
   };
   //Answer Correctly function
   const AnswerCorrectly = () => {
-    if (reveal) {
+  
       return (
         <div>
           {correctGuess ? (
@@ -306,9 +322,7 @@ export default function Home(props: any) {
           )}
         </div>
       );
-    } else {
-      return <p className={styles.incorrect}>Incorrect! Try again.</p>;
-    }
+    
   };
 
   //pushing each row in the box
@@ -413,15 +427,30 @@ export default function Home(props: any) {
           </button>
 
           <button className={styles.button} onClick={Rulespopup}>
-            {showRules ? 'Hide Rules' : 'Show Rules'}
+            {showRules ? null : 'Show Rules'}
           </button>
         </div>
 
-        <div className={styles.result}>{reveal ? AnswerCorrectly() : null}</div>
+    
       </div>
+
+
+
+      {/* if reveal is true we will popup the answer if its correct or not */}
+      {reveal && (
+          <div className={styles.popup} style={{ display: modalDisplay2}}>
+            <div className={styles.popupContent}>
+              <span className={styles.close} onClick={Resultpopup}>
+                &times;
+              </span>
+              <AnswerCorrectly />
+            </div>
+          </div>
+        )}
+
       {showRules && (
-        <div className={styles.modal} style={{ display: modalDisplay }}>
-          <div className={styles.modalContent}>
+        <div className={styles.popup} style={{ display: modalDisplay }}>
+          <div className={styles.popupContent}>
             <span className={styles.close} onClick={Rulespopup}>
               &times;
             </span>
