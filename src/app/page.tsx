@@ -391,8 +391,8 @@ export default function Home(props: any) {
     <main className={styles.main}>
       <div className={styles.description}>
         <div className={styles.name}>
-          <span className={styles.titlefirst}>Guess the </span>
-          <span className={styles.titleSecond}>&nbsp;Nba Player</span>
+          <span className={styles.titlefirst}>Guess The </span>
+          <span className={styles.titleSecond}>&nbsp;NBA Player</span>
         </div>
 
         <Image
