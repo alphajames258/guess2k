@@ -164,6 +164,16 @@
   margin-left: 20px;
 }
 
+.jersey {
+  margin-bottom: 5px;
+  color: red
+}
+
+.team {
+  margin-bottom: 5px;
+  color: red
+
+}
 
 /* to make it mobile friendly */
 @media (min-width: 701px) and (max-width: 1120px) {

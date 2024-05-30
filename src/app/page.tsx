@@ -26,6 +26,8 @@ const MaxAttempts = 5; //Max Attempts
 
 //getting players higher than rating 85
 export default function Home(props: any) {
+  const [showJersey, setShowJersey] = useState(false);
+  const [showTeam, setShowTeam] = useState(false);
   const [showResult, setShowResult] = useState(false)
   const [showRules, setShowRules] = useState(false);
   const modalDisplay2 = showResult ? 'block' : 'none';
@@ -83,6 +85,7 @@ export default function Home(props: any) {
   const playerName = name.toUpperCase(); // LEBRON JAMES
   //checking the current attempt. only 5 attempts allowed
   const [currentAttempt, setCurrentAttempt] = useState(0);
+  const [incorrectAttempt, setIncorrectAttempt] = useState(0);
   //5 guesses each row will have the amount of letters the random player has
   const [guesses, setGuesses] = useState(
     Array(MaxAttempts)
@@ -235,6 +238,15 @@ export default function Home(props: any) {
        
        
       }
+      setIncorrectAttempt(incorrectAttempt + 1);
+
+      if (incorrectAttempt >=2) {
+        setShowJersey(true)
+      }
+
+      if (incorrectAttempt >=3) {
+        setShowTeam(true)
+      }
     }
   }
   };
@@ -256,14 +268,8 @@ export default function Home(props: any) {
             Position: {position[0]} {position[1]}
           </p>
           {height && <p className={styles.hintItem}>Height: {height}</p>}
-          {isNumber(jersey) ? (
-            <p className={styles.hintItem}>Jersey : {jersey}</p>
-          ) : (
-            <p className={styles.hintItem}>
-              Jersey : Not available at the moment
-            </p>
-          )}
-          <p className={styles.hintItem}>Team: {team}</p>
+        {showJersey &&  <p className={styles.jersey}>Jersey : {jersey}</p>}
+        {showTeam &&  <p className={styles.team}>Team: {team}</p>}
           <p className={styles.hintItem}>Overall: {overall}</p>
         </div>
       </div>
@@ -291,6 +297,9 @@ export default function Home(props: any) {
     setCurrentAttempt(0);
     setReveal(false);
     setCorrectGuess(false);
+    setIncorrectAttempt(0)
+    setShowJersey(false)
+    setShowTeam(false)
     inputRefs.current = [];
   };
   //Answer Correctly function
