@@ -160,8 +160,12 @@
   margin-bottom: 5px;
 }
 
-.logo {
-  margin-left: 20px;
+.logo1 {
+margin-right: 10px;
+}
+
+.logo2 {
+  margin-left: 10px;
 }
 
 .jersey {
@@ -172,8 +176,8 @@
 .team {
   margin-bottom: 5px;
   color: red
-
 }
+
 
 /* to make it mobile friendly */
 @media (min-width: 701px) and (max-width: 1120px) {
@@ -278,7 +282,11 @@
     filter: invert(1);
   }
 
-  .logo {
+  .logo1 {
+    filter: invert(1) drop-shadow(0 0 0.3rem #ffffff70);
+  }
+
+  .logo2 {
     filter: invert(1) drop-shadow(0 0 0.3rem #ffffff70);
   }
 }

@@ -311,7 +311,7 @@ export default function Home(props: any) {
             <p className={styles.correct}>Correct! The player is {name}</p>
           ) : (
             <p className={styles.incorrect}>
-              Incorrect! The player is {name} Press Reroll to try again.
+              Incorrect! The player is {name}. Press Reroll to try again.
             </p>
           )}
           {randomPlayer.image ? (
@@ -399,13 +399,20 @@ export default function Home(props: any) {
   return (
     <main className={styles.main}>
       <div className={styles.description}>
+      <Image
+          className={styles.logo1}
+          src={logo}
+          alt="Logo"
+          width={100}
+          height={125}
+        />
         <div className={styles.name}>
           <span className={styles.titlefirst}>Guess The </span>
           <span className={styles.titleSecond}>&nbsp;NBA Player</span>
         </div>
 
         <Image
-          className={styles.logo}
+          className={styles.logo2}
           src={logo}
           alt="Logo"
           width={100}

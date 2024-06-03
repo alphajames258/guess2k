@@ -97,13 +97,26 @@ async function getTeamData(teamName, browser) {
           let details = entries.querySelector(
             '.entry-subtext-font.crop-subtext-font'
           );
-
-          if (details.children.length === 6) {
+          if (details.children.length === 7) {
             playerData.position = [
               details.children[2].textContent,
               details.children[4].textContent,
             ];
             playerData.height = details.children[5].textContent;
+          } else if (details.children.length === 6) {
+            if (details.children[3].textContent === '/') {
+              playerData.position = [
+                details.children[2].textContent,
+                details.children[4].textContent,
+              ];
+              playerData.height = details.textContent;
+            } else if (details.children[2].textContent === '/') {
+              playerData.position = [
+                details.children[1].textContent,
+                details.children[3].textContent,
+              ];
+              playerData.height = details.children[4].textContent;
+            }
           } else if (details.children.length === 5) {
             console.log(details, 'anthony details');
             if (details.children[2].textContent === '/') {
@@ -111,7 +124,11 @@ async function getTeamData(teamName, browser) {
                 details.children[1].textContent,
                 details.children[3].textContent,
               ];
-              playerData.height = details.children[4].textContent;
+              if (/\d/.test(details.children[4].textContent)) {
+                playerData.height = details.children[4].textContent;
+              } else {
+                playerData.height = details.textContent;
+              }
             } else {
               playerData.position = [
                 details.children[2].textContent,
@@ -120,14 +137,16 @@ async function getTeamData(teamName, browser) {
               playerData.height = details.textContent;
             }
           } else if (details.children.length === 4) {
-            playerData.position = [
-              details.children[1].textContent,
-              details.children[3].textContent,
-            ];
-            playerData.extraData = details.textContent;
+            if (!details.children[1].textContent) {
+              playerData.position = details.children[2].textContent;
+              playerData.height = details.textContent;
+            } else {
+              playerData.position = [details.children[1].textContent];
+              playerData.height = details.children[2].textContent;
+            }
           } else if (details.children.length === 3) {
             playerData.position = [details.children[1].textContent];
-            playerData.height = details.children[2].textContent;
+            playerData.height = details.textContent;
           } else if (details.children.length === 2) {
             playerData.position = [details.children[1].textContent];
             playerData.extraData = details.textContent;
