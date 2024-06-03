@@ -28,7 +28,7 @@ const Rules = () => {
         players team name to assist you further. Stay sharp, and lets see if you
         have what it takes to uncover the mystery behind each NBA player!
       </p>
-      <p className={styles.par}>Good luck and have fun! 🏀</p>
+      <p className={styles.par}>🏀 Good luck and have fun! 🏀</p>
       
     </div>
   );
