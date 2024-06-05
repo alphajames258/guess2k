@@ -26,12 +26,16 @@ const MaxAttempts = 5; //Max Attempts
 
 //getting players higher than rating 85
 export default function Home(props: any) {
-  const [showJersey, setShowJersey] = useState(false);
-  const [showTeam, setShowTeam] = useState(false);
-  const [showResult, setShowResult] = useState(false)
-  const [showRules, setShowRules] = useState(false);
-  const modalDisplay2 = showResult ? 'block' : 'none';
-  const modalDisplay = showRules ? 'block' : 'none';
+  const [updatedPlayerData, setUpdatedPlayerData] = useState(false);
+  const [consecutiveCorrectGuesses, setConsecutiveCorrectGuesses] = useState(0); // Track consecutive correct guesses
+  const [stars, setStars] = useState(0);
+
+  const [showJersey, setShowJersey] = useState(false); //To show Jersey
+  const [showTeam, setShowTeam] = useState(false); //To show Team
+  const [showResult, setShowResult] = useState(false); //To show result
+  const [showRules, setShowRules] = useState(false); //To show Rules
+  const modalDisplay2 = showResult ? 'block' : 'none'; //How to Display popup
+  const modalDisplay = showRules ? 'block' : 'none'; //How to Display popup
   const [selectedRating, setSelectedRating] = useState(90);
   const [players, setPlayers] = useState<Player[]>(
     getRandomPlayers(playerData, 60, 85)
@@ -60,7 +64,7 @@ export default function Home(props: any) {
 
   const [reveal, setReveal] = useState<boolean>(false); //revealing state
   const [correctGuess, setCorrectGuess] = useState(false); //checking correct guess
-  const inputRefs = useRef<HTMLInputElement[][]>([]);
+  const inputRefs = useRef<HTMLInputElement[][]>([]); //Allows us to type
 
   //allowing to move foward and backwards with keyboard
   const [attemptSubmitted, setAttemptSubmitted] = useState(false);
@@ -70,9 +74,8 @@ export default function Home(props: any) {
   };
 
   const Resultpopup = () => {
-    setShowResult(!showResult)
-
-  }
+    setShowResult(!showResult);
+  };
   //Everytime pleyer state changes this will be called
   useEffect(() => {
     setRandomPlayer(getRandomItem(players));
@@ -146,6 +149,25 @@ export default function Home(props: any) {
     index: number
   ) => {
     let previndex = index - 1;
+    let nextindex = index + 1;
+
+    // Handle left arrow key press
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      // If current index is 0, don't move left
+      if (index === 0) return;
+      // Move focus to the left input box
+      inputRefs.current[attemptIndex][previndex]?.focus();
+    }
+
+    // Handle right arrow key press
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      // If current index is the last index, don't move right
+      if (index === playerName.length - 1) return;
+      // Move focus to the right input box
+      inputRefs.current[attemptIndex][nextindex]?.focus();
+    }
 
     //if i press the backspace im going to create a shallow array of userGuess
     if (e.key === 'Backspace') {
@@ -193,62 +215,66 @@ export default function Home(props: any) {
   //test if correct
   const handleSubmit = () => {
     if (guesses[currentAttempt]) {
-    //joining the current attempt guess
-    const guess = guesses[currentAttempt].join('');
-    
-    //taking away dashed and spaces
-    const playerNamefix = playerName.replace(/\s/g, '').replace(/[-"']/g, '');
-    
-    //if guess which is all capatilized no space is equal to playername which is taking away all spaces and is already uppercased,
-    //set correct guess and reveal to true
-    if (guess === playerNamefix) {
-      setCorrectGuess(true);
-      setReveal(true);
-      setShowResult(true)
+      //joining the current attempt guess
+      const guess = guesses[currentAttempt].join('');
 
-      //else we are creating shallow array of colors, for loop through playername
-    } else {
-      const newColors = [...colors];
-      for (let i = 0; i < playerName.length; i++) {
-        if (guesses[currentAttempt][i] === playerName[i]) {
-          newColors[currentAttempt][i] = 'green';
-          //includes the guess letter and the guess is a
-        } else if (
-          playerName.includes(guesses[currentAttempt][i]) &&
-          /[A-Z]/.test(guesses[currentAttempt][i])
-        ) {
-          newColors[currentAttempt][i] = 'yellow';
-        } else {
-          newColors[currentAttempt][i] = 'red';
-        }
-      
-      }
+      //taking away dashed and spaces
+      const playerNamefix = playerName.replace(/\s/g, '').replace(/[-"']/g, '');
 
-
-      //setting color to newColors and setting current attempt by incrementing the currentAttempt
-      setColors(newColors);
-
-      setCurrentAttempt(currentAttempt + 1);
-
-      //if currentAttempt is === to max attempts reveal the player
-      if (currentAttempt + 1 === MaxAttempts) {
-        setCorrectGuess(false);
+      //if guess which is all capatilized no space is equal to playername which is taking away all spaces and is already uppercased,
+      //set correct guess and reveal to true
+      if (guess === playerNamefix) {
+        setCorrectGuess(true);
         setReveal(true);
-        setShowResult(true)
-       
-       
-      }
-      setIncorrectAttempt(incorrectAttempt + 1);
+        setShowResult(true);
+        setConsecutiveCorrectGuesses(consecutiveCorrectGuesses + 1);
+        setStars(stars + 1); // Increment star count
 
-      if (incorrectAttempt >=2) {
-        setShowJersey(true)
-      }
+        if (consecutiveCorrectGuesses === 5) {
+          setUpdatedPlayerData(true);
+          setConsecutiveCorrectGuesses(0);
+        }
 
-      if (incorrectAttempt >=3) {
-        setShowTeam(true)
+        //else we are creating shallow array of colors, for loop through playername
+      } else {
+        const newColors = [...colors];
+        for (let i = 0; i < playerName.length; i++) {
+          if (guesses[currentAttempt][i] === playerName[i]) {
+            newColors[currentAttempt][i] = 'green';
+            //includes the guess letter and the guess is a
+          } else if (
+            playerName.includes(guesses[currentAttempt][i]) &&
+            /[A-Z]/.test(guesses[currentAttempt][i])
+          ) {
+            newColors[currentAttempt][i] = 'yellow';
+          } else {
+            newColors[currentAttempt][i] = 'red';
+          }
+        }
+
+        //setting color to newColors and setting current attempt by incrementing the currentAttempt
+        setColors(newColors);
+
+        setCurrentAttempt(currentAttempt + 1);
+
+        //if currentAttempt is === to max attempts reveal the player
+        if (currentAttempt + 1 === MaxAttempts) {
+          setCorrectGuess(false);
+          setReveal(true);
+          setShowResult(true);
+          setConsecutiveCorrectGuesses(0);
+        }
+        setIncorrectAttempt(incorrectAttempt + 1);
+        //if more than 2 incorrect attempts, we will set jersey to true to display jersey
+        if (incorrectAttempt >= 2) {
+          setShowJersey(true);
+        }
+        //if more than 3 we will set team to true to display team
+        if (incorrectAttempt >= 3) {
+          setShowTeam(true);
+        }
       }
     }
-  }
   };
 
   const isNumber = (jersey: string) => {
@@ -268,8 +294,8 @@ export default function Home(props: any) {
             Position: {position[0]} {position[1]}
           </p>
           {height && <p className={styles.hintItem}>Height: {height}</p>}
-        {showJersey &&  <p className={styles.jersey}>Jersey : {jersey}</p>}
-        {showTeam &&  <p className={styles.team}>Team: {team}</p>}
+          {showJersey && <p className={styles.jersey}>Jersey : {jersey}</p>}
+          {showTeam && <p className={styles.team}>Team: {team}</p>}
           <p className={styles.hintItem}>Overall: {overall}</p>
         </div>
       </div>
@@ -297,41 +323,44 @@ export default function Home(props: any) {
     setCurrentAttempt(0);
     setReveal(false);
     setCorrectGuess(false);
-    setIncorrectAttempt(0)
-    setShowJersey(false)
-    setShowTeam(false)
+    setIncorrectAttempt(0);
+    setShowJersey(false);
+    setShowTeam(false);
+
     inputRefs.current = [];
   };
   //Answer Correctly function
   const AnswerCorrectly = () => {
-  
-      return (
-        <div>
-          {correctGuess ? (
-            <p className={styles.correct}>Correct! The player is {name}</p>
-          ) : (
-            <p className={styles.incorrect}>
-              Incorrect! The player is {name}. Press Reroll to try again.
-            </p>
-          )}
-          {randomPlayer.image ? (
-            <Image
-              className={styles.image}
-              src={randomPlayer.image}
-              alt="player image"
-              height={150}
-              width={110}
-            />
-          ) : (
-            <Image
-              className={styles.image}
-              alt="Placeholder Player Image"
-              src="/noPlayerImage.png"
-            />
-          )}
-        </div>
-      );
-    
+    if (correctGuess === false) {
+      setStars(0);
+      setConsecutiveCorrectGuesses(0);
+    }
+    return (
+      <div>
+        {correctGuess ? (
+          <p className={styles.correct}>Correct! The player is {name}</p>
+        ) : (
+          <p className={styles.incorrect}>
+            Incorrect! The player is {name}. Press Reroll to try again.
+          </p>
+        )}
+        {randomPlayer.image ? (
+          <Image
+            className={styles.image}
+            src={randomPlayer.image}
+            alt="player image"
+            height={150}
+            width={110}
+          />
+        ) : (
+          <Image
+            className={styles.image}
+            alt="Placeholder Player Image"
+            src="/noPlayerImage.png"
+          />
+        )}
+      </div>
+    );
   };
 
   //pushing each row in the box
@@ -395,11 +424,21 @@ export default function Home(props: any) {
     );
   }
 
+  // const displayStars = () => {
+  //   let allStars = [];
+  //   for (let i = 0; i < stars; i++) {
+  //     const eachStar = i;
+  //     allStars.push(<span key={i}>⭐</span>);
+  //   }
+  //   return allStars;
+  // };
+
   // style = {{backgroundColor : randomPlayer.team}
   return (
     <main className={styles.main}>
+      {/* <div className={styles.stars}>{displayStars()}</div> */}
       <div className={styles.description}>
-      <Image
+        <Image
           className={styles.logo1}
           src={logo}
           alt="Logo"
@@ -446,23 +485,19 @@ export default function Home(props: any) {
             {showRules ? null : 'Show Rules'}
           </button>
         </div>
-
-    
       </div>
-
-
 
       {/* if reveal is true we will popup the answer if its correct or not */}
       {reveal && (
-          <div className={styles.popup} style={{ display: modalDisplay2}}>
-            <div className={styles.popupContent}>
-              <span className={styles.close} onClick={Resultpopup}>
-                &times;
-              </span>
-              <AnswerCorrectly />
-            </div>
+        <div className={styles.popup} style={{ display: modalDisplay2 }}>
+          <div className={styles.popupContent}>
+            <span className={styles.close} onClick={Resultpopup}>
+              &times;
+            </span>
+            <AnswerCorrectly />
           </div>
-        )}
+        </div>
+      )}
 
       {showRules && (
         <div className={styles.popup} style={{ display: modalDisplay }}>
