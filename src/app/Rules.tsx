@@ -21,15 +21,18 @@ const Rules = () => {
       </p>
       <p className={styles.par}>
         Your challenge is to guess the identity of the NBA player based on the
-        provided hints. Pay close attention to the players position, height, and
-        overall rating. If you guess incorrectly more than twice, we will offer
-        you an additional clue: the players jersey number. And if you find
+        provided hints. Pay close attention to the players position, height,
+        and overall rating. If you guess incorrectly more than twice, we will
+        offer you an additional clue: the players jersey number. If you find
         yourself struggling after three incorrect attempts, we will reveal the
-        players team name to assist you further. Stay sharp, and lets see if you
-        have what it takes to uncover the mystery behind each NBA player!
+        players team name to assist you further.
+      </p>
+      <p className={styles.par}>
+        For an added challenge, if you guess correctly three times in a row, the
+        difficulty will increase and the players will now be from 75 overall or
+        higher.
       </p>
       <p className={styles.par}>🏀 Good luck and have fun! 🏀</p>
-      
     </div>
   );
 };

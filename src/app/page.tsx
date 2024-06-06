@@ -8,7 +8,9 @@ import playerData from '../../server/data2.json';
 import { getRandomPlayers, getRandomItem } from '@/utils/getRandomPlayer';
 import { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import RenderResult from 'next/dist/server/render-result';
+import DifficultyPopup from './Difficulty';
 import Rules from './Rules';
+
 import logo from './logo.png';
 
 interface Player {
@@ -26,9 +28,10 @@ const MaxAttempts = 5; //Max Attempts
 
 //getting players higher than rating 85
 export default function Home(props: any) {
-  const [updatedPlayerData, setUpdatedPlayerData] = useState(false);
   const [consecutiveCorrectGuesses, setConsecutiveCorrectGuesses] = useState(0); // Track consecutive correct guesses
-  const [stars, setStars] = useState(0);
+  const [stars, setStars] = useState(0)
+  const [difficultypopup, setDifficultyPopup] = useState(false);
+  const [called, setCalled] = useState(false)
 
   const [showJersey, setShowJersey] = useState(false); //To show Jersey
   const [showTeam, setShowTeam] = useState(false); //To show Team
@@ -85,7 +88,7 @@ export default function Home(props: any) {
   const { name } = randomPlayer; // Lebron James
 
   //making it uppercase
-  const playerName = name.toUpperCase(); // LEBRON JAMES
+  const playerName = name.replace(/['.]/g, '').toUpperCase(); // LEBRON JAMES, taking away any ' or .
   //checking the current attempt. only 5 attempts allowed
   const [currentAttempt, setCurrentAttempt] = useState(0);
   const [incorrectAttempt, setIncorrectAttempt] = useState(0);
@@ -228,12 +231,17 @@ export default function Home(props: any) {
         setReveal(true);
         setShowResult(true);
         setConsecutiveCorrectGuesses(consecutiveCorrectGuesses + 1);
-        setStars(stars + 1); // Increment star count
+        setStars(stars+1)
+     
 
-        if (consecutiveCorrectGuesses === 5) {
-          setUpdatedPlayerData(true);
-          setConsecutiveCorrectGuesses(0);
-        }
+
+        // setConsecutiveCorrectGuesses(consecutiveCorrectGuesses + 1);
+        // setStars(stars + 1); // Increment star count
+
+        // if (consecutiveCorrectGuesses === 5) {
+        //   setUpdatedPlayerData(true);
+        //   setConsecutiveCorrectGuesses(0);
+        // }
 
         //else we are creating shallow array of colors, for loop through playername
       } else {
@@ -262,7 +270,7 @@ export default function Home(props: any) {
           setCorrectGuess(false);
           setReveal(true);
           setShowResult(true);
-          setConsecutiveCorrectGuesses(0);
+          // setConsecutiveCorrectGuesses(0);
         }
         setIncorrectAttempt(incorrectAttempt + 1);
         //if more than 2 incorrect attempts, we will set jersey to true to display jersey
@@ -304,6 +312,17 @@ export default function Home(props: any) {
 
   //rerolling function
   const handleReroll = () => {
+    if (correctGuess === false) {
+      setStars(0);
+      setConsecutiveCorrectGuesses(0);
+
+    }
+    if (consecutiveCorrectGuesses  === 3) {
+      setPlayers(getRandomPlayers(playerData, 60, 75));
+      setConsecutiveCorrectGuesses(0);
+      setDifficultyPopup(true)
+      setCalled(true)
+    }
     //getting a new player
     const newPlayer = getRandomItem(players);
     setRandomPlayer(newPlayer);
@@ -338,7 +357,7 @@ export default function Home(props: any) {
     return (
       <div>
         {correctGuess ? (
-          <p className={styles.correct}>Correct! The player is {name}</p>
+          <p className={styles.correct}>Correct! The player is {name}.</p>
         ) : (
           <p className={styles.incorrect}>
             Incorrect! The player is {name}. Press Reroll to try again.
@@ -424,19 +443,21 @@ export default function Home(props: any) {
     );
   }
 
-  // const displayStars = () => {
-  //   let allStars = [];
-  //   for (let i = 0; i < stars; i++) {
-  //     const eachStar = i;
-  //     allStars.push(<span key={i}>⭐</span>);
-  //   }
-  //   return allStars;
-  // };
+  const displayStars = () => {
+    if (called === false) {
+    let allStars = [];
+    for (let i = 0; i < stars; i++) {
+      const eachStar = i;
+      allStars.push(<span key={i} className={styles.stars}>🏀</span>);
+    }
+    return allStars;
+  }
+  };
 
   // style = {{backgroundColor : randomPlayer.team}
   return (
     <main className={styles.main}>
-      {/* <div className={styles.stars}>{displayStars()}</div> */}
+     
       <div className={styles.description}>
         <Image
           className={styles.logo1}
@@ -509,6 +530,11 @@ export default function Home(props: any) {
           </div>
         </div>
       )}
+      {difficultypopup && (
+        <DifficultyPopup onClose={() => setDifficultyPopup(false)}/>
+      )}
+       <div className={styles.starContainer}>{displayStars()}</div>
+     
     </main>
   );
 }

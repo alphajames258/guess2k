@@ -274,6 +274,24 @@ margin-right: 10px;
   cursor: pointer;
 }
 
+.par {
+  margin-top: 5px;
+  text-align: center;
+  color: black;
+}
+
+
+.starContainer {
+  position: fixed;
+  /* bottom: px; */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 40px; /* Adjust size as needed */
+  color: orange; /* Change color as needed */
+
+}
+
+
 
 /* changing logo */
 
