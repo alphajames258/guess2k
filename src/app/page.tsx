@@ -488,11 +488,12 @@ export default function Home(props: any) {
           <button onClick={() => handleRating(80)}>80+</button>
           <button onClick={() => handleRating(90)}>90+</button>
         </div> */}
-
+        <div className={styles.BothContainer}>
         <div className={styles.hints}>{Hints()}</div>
 
-        <div className={styles.inputRow}>{inputBoxes}</div>
 
+        <div className={styles.inputRow}>{inputBoxes}</div>
+        </div>
         <div className={styles.buttonContainer}>
           <button className={styles.button} onClick={handleSubmit}>
             Submit
