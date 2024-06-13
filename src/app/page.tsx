@@ -29,9 +29,9 @@ const MaxAttempts = 5; //Max Attempts
 //getting players higher than rating 85
 export default function Home(props: any) {
   const [consecutiveCorrectGuesses, setConsecutiveCorrectGuesses] = useState(0); // Track consecutive correct guesses
-  const [stars, setStars] = useState(0)
+  const [stars, setStars] = useState(0);
   const [difficultypopup, setDifficultyPopup] = useState(false);
-  const [called, setCalled] = useState(false)
+  const [called, setCalled] = useState(false);
 
   const [showJersey, setShowJersey] = useState(false); //To show Jersey
   const [showTeam, setShowTeam] = useState(false); //To show Team
@@ -39,10 +39,13 @@ export default function Home(props: any) {
   const [showRules, setShowRules] = useState(false); //To show Rules
   const modalDisplay2 = showResult ? 'block' : 'none'; //How to Display popup
   const modalDisplay = showRules ? 'block' : 'none'; //How to Display popup
-  const [selectedRating, setSelectedRating] = useState(90);
+  const [selectedRating, setSelectedRating] = useState(85);
   const [players, setPlayers] = useState<Player[]>(
-    getRandomPlayers(playerData, 60, 85)
+    getRandomPlayers(playerData, 60, selectedRating)
   );
+
+  // New state to track if user can toggle difficulty
+  const [canChangeDifficulty, setCanChangeDifficulty] = useState(false);
 
   // const handleRating = (rating) => {
   //   setSelectedRating(rating);
@@ -231,9 +234,7 @@ export default function Home(props: any) {
         setReveal(true);
         setShowResult(true);
         setConsecutiveCorrectGuesses(consecutiveCorrectGuesses + 1);
-        setStars(stars+1)
-     
-
+        setStars(stars + 1);
 
         // setConsecutiveCorrectGuesses(consecutiveCorrectGuesses + 1);
         // setStars(stars + 1); // Increment star count
@@ -315,13 +316,14 @@ export default function Home(props: any) {
     if (correctGuess === false) {
       setStars(0);
       setConsecutiveCorrectGuesses(0);
-
     }
-    if (consecutiveCorrectGuesses  === 3) {
-      setPlayers(getRandomPlayers(playerData, 60, 75));
+    if (consecutiveCorrectGuesses === 3) {
+      setSelectedRating(75)
+      setPlayers(getRandomPlayers(playerData, 60, selectedRating));
       setConsecutiveCorrectGuesses(0);
-      setDifficultyPopup(true)
-      setCalled(true)
+      setDifficultyPopup(true);
+      setCalled(true);
+      setCanChangeDifficulty(true)
     }
     //getting a new player
     const newPlayer = getRandomItem(players);
@@ -445,19 +447,30 @@ export default function Home(props: any) {
 
   const displayStars = () => {
     if (called === false) {
-    let allStars = [];
-    for (let i = 0; i < stars; i++) {
-      const eachStar = i;
-      allStars.push(<span key={i} className={styles.stars}>🏀</span>);
+      let allStars = [];
+      for (let i = 0; i < stars; i++) {
+        const eachStar = i;
+        allStars.push(
+          <span key={i} className={styles.stars}>
+            🏀
+          </span>
+        );
+      }
+      return allStars;
     }
-    return allStars;
-  }
+  };
+
+  const handleDifficulty = () => {
+    if (canChangeDifficulty) {
+      const newRating = selectedRating === 75 ? 85 : 75;
+      setSelectedRating(newRating);
+      setPlayers(getRandomPlayers(playerData, 60, newRating));
+    }
   };
 
   // style = {{backgroundColor : randomPlayer.team}
   return (
     <main className={styles.main}>
-     
       <div className={styles.description}>
         <Image
           className={styles.logo1}
@@ -480,7 +493,14 @@ export default function Home(props: any) {
         />
       </div>
 
+   
+
       <div className={styles.container}>
+      {canChangeDifficulty && (
+        <button  className={styles.button} onClick = {handleDifficulty}>
+          {selectedRating === 75 ? '85+' : '75+'} Overall
+        </button>
+      )}
         {/* <div className={styles.ratingSelection}>
           <p>Select Player Rating:</p>
 
@@ -489,10 +509,9 @@ export default function Home(props: any) {
           <button onClick={() => handleRating(90)}>90+</button>
         </div> */}
         <div className={styles.BothContainer}>
-        <div className={styles.hints}>{Hints()}</div>
+          <div className={styles.hints}>{Hints()}</div>
 
-
-        <div className={styles.inputRow}>{inputBoxes}</div>
+          <div className={styles.inputRow}>{inputBoxes}</div>
         </div>
         <div className={styles.buttonContainer}>
           <button className={styles.button} onClick={handleSubmit}>
@@ -532,10 +551,9 @@ export default function Home(props: any) {
         </div>
       )}
       {difficultypopup && (
-        <DifficultyPopup onClose={() => setDifficultyPopup(false)}/>
+        <DifficultyPopup onClose={() => setDifficultyPopup(false)} />
       )}
-       <div className={styles.starContainer}>{displayStars()}</div>
-     
+      <div className={styles.starContainer}>{displayStars()}</div>
     </main>
   );
 }
