@@ -318,13 +318,15 @@ export default function Home(props: any) {
       setConsecutiveCorrectGuesses(0);
     }
     if (consecutiveCorrectGuesses === 3) {
-      setSelectedRating(75)
-      setPlayers(getRandomPlayers(playerData, 60, selectedRating));
+      setSelectedRating(75);
+
       setConsecutiveCorrectGuesses(0);
       setDifficultyPopup(true);
       setCalled(true);
-      setCanChangeDifficulty(true)
+      setCanChangeDifficulty(true);
     }
+
+    setPlayers(getRandomPlayers(playerData, 60, selectedRating));
     //getting a new player
     const newPlayer = getRandomItem(players);
     setRandomPlayer(newPlayer);
@@ -465,6 +467,30 @@ export default function Home(props: any) {
       const newRating = selectedRating === 75 ? 85 : 75;
       setSelectedRating(newRating);
       setPlayers(getRandomPlayers(playerData, 60, newRating));
+
+      const newPlayer = getRandomItem(players);
+      setRandomPlayer(newPlayer);
+      //setting Guesses back to empty arrays
+      setGuesses(
+        Array.from({ length: MaxAttempts }, () =>
+          Array(newPlayer.name.length).fill('')
+        )
+      );
+      //setting colors back to empty arrays
+      setColors(
+        Array.from({ length: MaxAttempts }, () =>
+          Array(newPlayer.name.length).fill('')
+        )
+      );
+      //reset all states
+      setCurrentAttempt(0);
+      setReveal(false);
+      setCorrectGuess(false);
+      setIncorrectAttempt(0);
+      setShowJersey(false);
+      setShowTeam(false);
+
+      inputRefs.current = [];
     }
   };
 
@@ -493,14 +519,13 @@ export default function Home(props: any) {
         />
       </div>
 
-   
-
       <div className={styles.container}>
-      {canChangeDifficulty && (
-        <button  className={styles.button} onClick = {handleDifficulty}>
-          {selectedRating === 75 ? '85+' : '75+'} Overall
-        </button>
-      )}
+        <div className={styles.starContainer}>{displayStars()}</div>
+        {canChangeDifficulty && (
+          <button className={styles.button} onClick={handleDifficulty}>
+            {selectedRating === 75 ? '85+' : '75+'} Overall
+          </button>
+        )}
         {/* <div className={styles.ratingSelection}>
           <p>Select Player Rating:</p>
 
@@ -553,7 +578,6 @@ export default function Home(props: any) {
       {difficultypopup && (
         <DifficultyPopup onClose={() => setDifficultyPopup(false)} />
       )}
-      <div className={styles.starContainer}>{displayStars()}</div>
     </main>
   );
 }
