@@ -1,3 +1,5 @@
+
+
 /* page.module.css */
 
 .description {
@@ -32,17 +34,17 @@
 }
 
 .inputBox {
-  width: 40px;
-  height: 40px;
+  width: 50px; /* Slightly smaller width */
+  height: 50px; /* Slightly smaller height */
   margin: 0 5px;
-
+  padding: 5px; /* Added padding */
   text-align: center;
-  font-size: 24px;
+  font-size: 28px; /* Adjusted font size */
   font-weight: bold;
   color: #007bff;
   background-color: rgba(255, 255, 255, 0.973);
-
   border-radius: 5px;
+  border: none; /* Removed border color */
 }
 .space {
   width: 2rem;
@@ -66,6 +68,7 @@
     rgba(0, 0, 0, 0.05) 0px 0px 2px 7px;
   transition: all 0.2s;
   margin-left: 20px;
+ 
 }
 .button:hover {
   box-shadow: #007bff -2px -2px 0px 2px, rgb(255, 17, 0) 0px 0px 0px 4px,
@@ -106,23 +109,25 @@
   margin-top: 30px;
 }
 .buttonContainer {
-  margin-top: 20px;
+ margin-bottom: 100px;
 }
 
 .BothContainer {
-  margin-top: 10px;
-  border: 1px solid white;
+margin-bottom: 20px;
   padding: 25px;
   border-radius: 5px;
 }
 .hintsContent {
   margin-top: 10px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row; /* Display hints horizontally */
   align-items: center;
+  justify-content: center; /* Center hints horizontally */
+  flex-wrap: wrap; /* Allow hints to wrap to the next line */
+  color: white;
 }
 .hintItem {
-  margin-bottom: 5px;
+  margin: 10px; /* Space between hints */
 }
 .logo1 {
   margin-right: 10px;
@@ -131,12 +136,14 @@
   margin-left: 10px;
 }
 .jersey {
-  margin-bottom: 5px;
+
   color: red;
+
 }
 .team {
-  margin-bottom: 5px;
+  
   color: red;
+  margin-left: 10px; /* Added space between jersey and team */
 } /* to make it mobile friendly */
 @media (min-width: 701px) and (max-width: 1120px) {
   .grid {
@@ -163,7 +170,7 @@
     flex-direction: row;
   }
   .logo1 {
-  display: block;
+    display: block;
   }
   .logo2 {
     display: none;
@@ -172,9 +179,9 @@
     flex-direction: column;
   }
   .inputBox {
-    width: 1.2rem;
-    height: 1.2rem;
-    font-size: 0.8rem;
+    width: 1.5rem; /* Adjusted for mobile */
+    height: 1.5rem; /* Adjusted for mobile */
+    font-size: 0.8rem; /* Adjusted for mobile */
     margin: 0.05rem;
   }
   .space {
@@ -199,7 +206,6 @@
     padding: 0.4rem 0.8rem;
   }
   .popup {
-    
     margin-top: 200px;
   }
 
